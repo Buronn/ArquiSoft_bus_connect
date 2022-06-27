@@ -5,7 +5,7 @@ class Suma(Client):
     def __init__(self):
         print(f"""Cliente de suma
         Ingrese los números separados por un ' '.\n Para cerrar el programa escriba quit""")
-        super().__init__("buron")
+        super().__init__("sumas")
         
 if __name__ == "__main__":
     keep_alive = True

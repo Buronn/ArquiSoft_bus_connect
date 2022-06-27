@@ -1,7 +1,7 @@
-from services.models import Usuario, Base
+from database.models import Usuario, Base
 from sqlalchemy import create_engine
-from services.config import Config
-from services.models import Usuario, Base
+from database.config import Config
+from database.models import Usuario, Base
 from sqlalchemy.orm import Session
 import datetime
 import os
@@ -16,3 +16,5 @@ def init_db():
     session.commit()
     session.close()
     return True
+
+init_db()
