@@ -11,7 +11,7 @@ class Client:
             raise ValueError("Max length of service name is 5")
         self.name = name
 
-    def exec_client(self, endpoint=(os.environ["SOCKET_HOST"],5000), climsg="", debug=False):
+    def exec_client(self, endpoint=(os.environ["SOCKET_HOST"],int(os.environ["BUS_PORT"])), climsg="", debug=False):
         '''Genera la conexión con el BUS y consume el servicio especificado'''
         def safe_recv(socket, length):
             '''Se utiliza para evitar errores al trabajar con el socket'''
@@ -56,7 +56,8 @@ class Client:
         
         # Enviamos el mensaje
         msg_len = str( len(climsg) + 5 )
-        self.s.send(("0"*(1+len(msg_len)%5) + msg_len + self.name + climsg).encode())
+        data = ("0"*(5 - len(msg_len)%5) + msg_len + self.name + climsg).encode()
+        self.s.send(data)
 
         # Consumimos y parseamos los campos del socket
         try:
@@ -69,4 +70,5 @@ class Client:
             print(e)
             return
         print("\n2",length, srvice, code, srvmsg)
+        self.s.close()
         return srvmsg.decode()

@@ -16,7 +16,7 @@ class Service:
     def __del__(self):
         self.s.close()
 
-    def start_service(self, endpoint=(os.environ["SOCKET_HOST"],5000), debug=False):
+    def start_service(self, endpoint=(os.environ["SOCKET_HOST"],int(os.environ["BUS_PORT"])), debug=False):
         '''Genera la conexion con el BUS y genera un loop donde se recibiran y procesaran los mensajes'''
         
         def safe_recv(socket, length):
