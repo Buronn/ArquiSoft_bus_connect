@@ -1,0 +1,8 @@
+client/node_modules
+.idea
+backend/venv
+__pycache__
+backend/tmp
+prodDown.sh
+prodUp.sh
+.env

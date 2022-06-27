@@ -1,0 +1,59 @@
+version: '3.5'
+
+services:
+
+  db:
+    image: postgres:10.5
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    env_file:
+      - db.env
+    volumes:
+      - './db/init:/docker-entrypoint-initdb.d/'
+
+  server:
+    container_name: server
+    restart: always
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - SOCKET_HOST=socket
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/usr/src/app
+    depends_on:
+      - "db"
+      - "socket"
+
+  socket:
+    container_name: socket
+    restart: always
+    build:
+      context: ./socket/
+      dockerfile: Dockerfile
+      args:
+        SSHPASS: ${BUS_PASS}
+        USER: ${BUS_USER}
+        SERVER: ${BUS_SERVER}
+    env_file:
+      - .env
+    ports:
+      - "3000:5000"
+    volumes:
+      - ./socket:/app
+
+  # DELETE IN PROD #
+  # cloudbeaver:
+  #   container_name: cloudbeaver
+  #   image: dbeaver/cloudbeaver:latest
+  #   ports: 
+  #     - '8978:8978'
+  #   volumes:
+  #     - '/var/cloudbeaver/workspace:/opt/cloudbeaver/workspace'
+  #   depends_on:
+  #     - "db"
