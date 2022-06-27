@@ -25,19 +25,26 @@ class Eventos(Service):
             duracion = int(climsg["duracion"])
             grupo = climsg["grupo"]
             eventos = []
-            miembros = []
             if grupo == "-1":
                 grupo = None
                 eventoss = db.query(Evento).filter_by(usuario_id=current_user.id).all()
                 for evento in eventoss:
                     eventos.append(to_dict(evento))
+                membresia = db.query(Miembro).filter_by(usuario_id=current_user.id).all()
+                for miembro_grupo in membresia:
+                    eventoss = db.query(Evento).filter_by(grupo_id=miembro_grupo.grupo_id).all()
+                    for evento in eventoss:
+                        eventos.append(to_dict(evento))
+
             else:
                 grupo = db.query(Grupo).filter_by(id=grupo).first()
-                miembross = db.query(Miembro).filter_by(grupo_id=grupo.id).all()
                 eventos = []
-                for miembro in miembross:
-                    miembros.append(to_dict(miembro))
-                    eventoss = db.query(Evento).filter_by(usuario_id=miembro.usuario.id).all()
+                eventoss = db.query(Evento).filter_by(grupo_id=grupo.id).all()
+                for evento in eventoss:
+                    eventos.append(to_dict(evento))
+                miembros = db.query(Miembro).filter_by(grupo_id=grupo.id).all()
+                for miembro in miembros:
+                    eventoss = db.query(Evento).filter_by(usuario_id=miembro.usuario_id).all()
                     for evento in eventoss:
                         eventos.append(to_dict(evento))
             if db.query(Evento).filter_by(nombre=titulo).first() is not None:
@@ -79,18 +86,11 @@ class Eventos(Service):
                         descripcion=descripcion,
                         usuario_id=current_user.id,
                         fecha_inicio=fecha_inicio,
-                        fecha_fin=fecha_fin
+                        fecha_fin=fecha_fin,
+                        grupo_id = None
                     )
-                    if miembros:
-                        for miembro in miembros:
-                            eventom = Evento(
-                                nombre=titulo,
-                                descripcion=descripcion,
-                                usuario_id=miembro["usuario_id"],
-                                fecha_inicio=fecha_inicio,
-                                fecha_fin=fecha_fin
-                            )
-                            db.add(eventom)
+                    if grupo:
+                        evento.grupo_id = grupo.id
                     print("user id:", current_user.id, fecha_inicio, fecha_fin)
                     db.add(evento)
                     db.commit()

@@ -77,6 +77,10 @@ class Evento(Base):
     fecha_fin = Column(String(256), nullable=False)
     usuario_id = Column(Integer, ForeignKey(
         'usuario.id'), nullable=False)
+    grupo_id = Column(Integer, ForeignKey(
+        'grupo.id'), nullable=True)
+    def __repr__(self):
+        return '<Evento %r>' % self.nombre
 
 
 class LogoutToken(Base):
