@@ -11,7 +11,7 @@ if __name__ == "__main__":
             duracion = input("Cuanto durara tu evento (horas): ")
             titulo = input("Titulo: ")
             descripcion = input("Descripcion: ")
-            grupo = input("ID del Grupo: ")
+            grupo = input("ID del Grupo (\"-1\" para evento individual): ")
             try: 
                 a = Client("beven")
                 climsg = {

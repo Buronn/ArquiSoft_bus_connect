@@ -73,8 +73,8 @@ class Evento(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(80), nullable=False)
     descripcion = Column(String(256), nullable=False)
-    fecha_inicio = Column(Date, nullable=False)
-    fecha_fin = Column(Date, nullable=False)
+    fecha_inicio = Column(String(256), nullable=False)
+    fecha_fin = Column(String(256), nullable=False)
     usuario_id = Column(Integer, ForeignKey(
         'usuario.id'), nullable=False)
 

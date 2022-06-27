@@ -1,6 +1,6 @@
 from clients.Service import Service
 from database.session import session
-from database.models import Usuario, Miembro, Grupo, Evento
+from database.models import Usuario, Miembro, Grupo, Evento, to_dict
 import json, sys, os, jwt, datetime
 
 class Eventos(Service):
@@ -22,28 +22,81 @@ class Eventos(Service):
                 return "Usuario no encontrado"
             titulo = climsg["titulo"]
             descripcion = climsg["descripcion"]
-            duracion = climsg["duracion"]
+            duracion = int(climsg["duracion"])
             grupo = climsg["grupo"]
-            grupo = db.query(Grupo).filter_by(id=grupo).first()
-            if grupo is None:
-                return "Grupo no encontrado"
+            eventos = []
+            miembros = []
+            if grupo == "-1":
+                grupo = None
+                eventoss = db.query(Evento).filter_by(usuario_id=current_user.id).all()
+                for evento in eventoss:
+                    eventos.append(to_dict(evento))
+            else:
+                grupo = db.query(Grupo).filter_by(id=grupo).first()
+                miembross = db.query(Miembro).filter_by(grupo_id=grupo.id).all()
+                eventos = []
+                for miembro in miembross:
+                    miembros.append(to_dict(miembro))
+                    eventoss = db.query(Evento).filter_by(usuario_id=miembro.usuario.id).all()
+                    for evento in eventoss:
+                        eventos.append(to_dict(evento))
             if db.query(Evento).filter_by(nombre=titulo).first() is not None:
                 return "Evento ya existe"
-            dias = {
-                "lunes": [],
-                "martes": [],
-                "miercoles": [],
-                "jueves": [],
-                "viernes": [],
-            }
-            miembros = db.query(Miembro).filter_by(grupo=grupo).all()
-            for miembro in miembros:
-                eventos = db.query(Evento).filter_by(usuario_id=miembro.usuario_id).all()
-                for evento in eventos:
-                    print(evento.fecha_inicio)
-                    print(evento.fecha_fin)
-                
-            return "lol lol lol"
+            inicio_laboral = 8
+            fin_laboral = 22
+            bloques_usados = []
+            for evento in eventos:
+                # dia del evento en formato DayOfWeek
+                print("evento: " + str(evento))
+                dia = evento["fecha_inicio"].split("-")[0]
+                inicio = int(evento["fecha_inicio"].split("-")[1].split(":")[0])
+                fin = int(evento["fecha_fin"].split("-")[1].split(":")[0])
+                d = str(dia)+"-"+str(inicio)+"-"+str(fin)
+                print(d)
+                bloques_usados.append(d)
+            dias = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+            for dia in dias:
+                for hora in range(inicio_laboral, fin_laboral):
+                    ocupado = False
+                    for bloque in bloques_usados:
+                        if dia == bloque.split("-")[0]:
+                            actual = hora
+                            inicio_bloque = int(bloque.split("-")[1])
+                            fin_bloque = int(bloque.split("-")[2])
+                            if actual >= inicio_bloque and actual < fin_bloque:
+                                ocupado = True
+                                hora = int(bloque.split("-")[1])
+                                break
+                    if ocupado:
+                        continue
+                    # formato de fecha: DayOfWeek-Hora
+                    fecha_inicio = dia+"-"+str(hora)+":00"
+                    fecha_fin = dia+"-"+str(hora+duracion)+":00"
+                    if hora+duracion > fin_laboral:
+                        continue
+                    evento = Evento(
+                        nombre=titulo,
+                        descripcion=descripcion,
+                        usuario_id=current_user.id,
+                        fecha_inicio=fecha_inicio,
+                        fecha_fin=fecha_fin
+                    )
+                    if miembros:
+                        for miembro in miembros:
+                            eventom = Evento(
+                                nombre=titulo,
+                                descripcion=descripcion,
+                                usuario_id=miembro["usuario_id"],
+                                fecha_inicio=fecha_inicio,
+                                fecha_fin=fecha_fin
+                            )
+                            db.add(eventom)
+                    print("user id:", current_user.id, fecha_inicio, fecha_fin)
+                    db.add(evento)
+                    db.commit()
+                    return "Evento creado"
+            else:
+                return "No hay bloques disponibles"
                     
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
