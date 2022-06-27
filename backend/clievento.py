@@ -3,21 +3,23 @@ from getpass import getpass
 import json
         
 if __name__ == "__main__":
-    print("Service: Grupo")
+    print("Service: Crear Evento")
     keep_alive = True
     try:
         while(keep_alive):
             token = getpass("Token: ")
+            duracion = input("Cuanto durara tu evento (horas): ")
             titulo = input("Titulo: ")
             descripcion = input("Descripcion: ")
-            emails = input("Ingrese los emails de los usuarios separados por comas: ")
+            grupo = input("ID del Grupo: ")
             try: 
-                a = Client("bgrup")
+                a = Client("beven")
                 climsg = {
                     "token": token,
+                    "duracion": duracion,
                     "titulo": titulo,
                     "descripcion": descripcion,
-                    "emails": emails
+                    "grupo": grupo
                 }
                 msg = a.exec_client(debug=True, climsg=json.dumps(climsg))
                 print("###################################\n\n", msg, "\n\n###################################")
