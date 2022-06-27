@@ -38,11 +38,12 @@ class Miembro(Base):
     admin = Column(Boolean, nullable=False)
     publicaciones = relationship(
         'Publicacion', back_populates='miembro', lazy='dynamic')
-    grupo = relationship('Grupo', back_populates='miembro', lazy='dynamic')
     join_date = Column(Date, nullable=True)
-
+    grupo_id = Column(Integer, ForeignKey(
+        'grupo.id'), nullable=True)
+    grupo = relationship('Grupo', back_populates='miembro')
     def __repr__(self):
-        return '<Miembro %r>' % self.nombre
+        return '<Miembro %r>' % self.usuario_id
 
 class Publicacion(Base):
     __tablename__ = 'publicacion'
@@ -61,8 +62,6 @@ class Grupo(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(80), nullable=False)
     descripcion = Column(String(80), nullable=False)
-    miembro_id = Column(Integer, ForeignKey(
-        'miembro.id'), nullable=False)
     miembro = relationship('Miembro', back_populates='grupo', lazy=True)
 
     def __repr__(self):

@@ -1,10 +1,5 @@
 from clients.Client import Client
 from getpass import getpass
-
-print("Service: ", Client)
-class Registro(Client):
-    def __init__(self):
-        super().__init__("bregi")
         
 if __name__ == "__main__":
     print("Service: Registro")
@@ -16,9 +11,10 @@ if __name__ == "__main__":
         phone = input("Ingrese telefono: ")
 
         try: 
-            a = Registro()
+            a = Client("bregi")
             climsg = user + " " + password + " " + email + " " + phone
-            a.exec_client(debug=True, climsg=climsg)
+            msg = a.exec_client(debug=True, climsg=climsg)
+            print("###################################\n\n", msg, "\n\n###################################")
         except Exception as e:
             print("Error: ", e)
 

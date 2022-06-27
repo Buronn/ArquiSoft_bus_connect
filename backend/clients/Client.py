@@ -69,6 +69,5 @@ class Client:
             # Informamos del error del formato sin terminar el programa.
             print(e)
             return
-        print("\n2",length, srvice, code, srvmsg)
         self.s.close()
         return srvmsg.decode()
