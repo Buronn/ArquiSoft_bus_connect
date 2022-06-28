@@ -2,6 +2,7 @@ from clients.Service import Service
 from database.session import session
 from database.models import Usuario, Miembro, Grupo, Evento, to_dict
 import json, sys, os, jwt, datetime
+from time import sleep
 
 class Eventos(Service):
     def __init__(self):
@@ -27,7 +28,7 @@ class Eventos(Service):
             eventos = []
             if grupo == "-1":
                 grupo = None
-                eventoss = db.query(Evento).filter_by(usuario_id=current_user.id).all()
+                eventoss = db.query(Evento).filter_by(usuario_id=current_user.id,grupo_id=None).all()
                 for evento in eventoss:
                     eventos.append(to_dict(evento))
                 membresia = db.query(Miembro).filter_by(usuario_id=current_user.id).all()
@@ -35,31 +36,28 @@ class Eventos(Service):
                     eventoss = db.query(Evento).filter_by(grupo_id=miembro_grupo.grupo_id).all()
                     for evento in eventoss:
                         eventos.append(to_dict(evento))
-
             else:
                 grupo = db.query(Grupo).filter_by(id=grupo).first()
                 eventos = []
-                eventoss = db.query(Evento).filter_by(grupo_id=grupo.id).all()
-                for evento in eventoss:
-                    eventos.append(to_dict(evento))
                 miembros = db.query(Miembro).filter_by(grupo_id=grupo.id).all()
-                for miembro in miembros:
-                    eventoss = db.query(Evento).filter_by(usuario_id=miembro.usuario_id).all()
+                for user in miembros:
+                    eventoss = db.query(Evento).filter_by(usuario_id=user.usuario_id,grupo_id=None).all()
                     for evento in eventoss:
                         eventos.append(to_dict(evento))
-            if db.query(Evento).filter_by(nombre=titulo).first() is not None:
-                return "Evento ya existe"
+                    user_membresy = db.query(Miembro).filter_by(usuario_id=user.usuario_id).all()
+                    for m in user_membresy:
+                        eventoss = db.query(Evento).filter_by(grupo_id=m.grupo_id).all()
+                        for evento in eventoss:
+                            eventos.append(to_dict(evento))
             inicio_laboral = 8
             fin_laboral = 22
             bloques_usados = []
             for evento in eventos:
                 # dia del evento en formato DayOfWeek
-                print("evento: " + str(evento))
                 dia = evento["fecha_inicio"].split("-")[0]
                 inicio = int(evento["fecha_inicio"].split("-")[1].split(":")[0])
                 fin = int(evento["fecha_fin"].split("-")[1].split(":")[0])
                 d = str(dia)+"-"+str(inicio)+"-"+str(fin)
-                print(d)
                 bloques_usados.append(d)
             dias = ["monday", "tuesday", "wednesday", "thursday", "friday"]
             for dia in dias:
@@ -91,7 +89,6 @@ class Eventos(Service):
                     )
                     if grupo:
                         evento.grupo_id = grupo.id
-                    print("user id:", current_user.id, fecha_inicio, fecha_fin)
                     db.add(evento)
                     db.commit()
                     return "Evento creado"
@@ -103,5 +100,13 @@ class Eventos(Service):
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             return "Error: " + str(e) + " " + fname + " " + str(exc_tb.tb_lineno)
 
+def main():
+    try:
+        Eventos()
+    except Exception as e:
+        print(e)
+        sleep(30)
+        main()
+
 if __name__ == "__main__":
-    a = Eventos()
+    main()

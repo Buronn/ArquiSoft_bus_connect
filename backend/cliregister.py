@@ -1,5 +1,6 @@
 from clients.Client import Client
 from getpass import getpass
+import json
         
 if __name__ == "__main__":
     print("Service: Registro")
@@ -10,11 +11,16 @@ if __name__ == "__main__":
             password = getpass("Ingrese contraseña: ")
             email = input("Ingrese email: ")
             phone = input("Ingrese telefono: ")
-
+            
             try: 
+                climsg = {
+                    "user": user,
+                    "password": password,
+                    "email": email,
+                    "phone": phone
+                }
                 a = Client("bregi")
-                climsg = user + " " + password + " " + email + " " + phone
-                msg = a.exec_client(debug=True, climsg=climsg)
+                msg = a.exec_client(debug=True, climsg=json.dumps(climsg))
                 print("###################################\n\n", msg, "\n\n###################################")
             except Exception as e:
                 print("Error: ", e)

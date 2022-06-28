@@ -3,6 +3,5 @@ bcrypt==3.2.2
 pycryptodome==3.10.1
 pyjwt
 uuid
-Pillow==8.4
 sockets
 SQLAlchemy==1.4.39

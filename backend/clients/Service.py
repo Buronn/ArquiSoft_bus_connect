@@ -28,7 +28,7 @@ class Service:
                 raise ConnectionError("Se ha cerrado la conexion con el BUS inesperadamente")
             elif len(res) != length:
                 # No va a ocurrir nunca pq el BUS arregla los largos.
-                raise Exception("largo recivido es inconsistente")
+                raise Exception("largo recibido es inconsistente")
 
             return res
 
@@ -72,9 +72,6 @@ class Service:
                 self.s.send(b"00008"+self.name.encode()+b"501")
                 continue
             
-            if debug:
-                print(length, srvice, climsg)
-            
             # Ejecutamos la función especifica del servicio
             res = self.service_function(climsg.decode())
      
@@ -87,5 +84,4 @@ class Service:
 
     def service_function(self, climsg):
         '''Funcion temporal, sera reemplazada en los distintos servicios'''
-        print(climsg)
         return "ack"

@@ -32,11 +32,8 @@ class Client:
             self.s.send(getsv)
             
             length = safe_recv(self.s,5)
-            print('len: ', length)
             nop    = safe_recv(self.s,5)
-            print('nop', nop) 
             msg    = safe_recv(self.s,int(length)-5)
-            print('msg', msg)
 
             if name.encode() not in msg:
                 print("Service not found")
@@ -70,4 +67,4 @@ class Client:
             print(e)
             return
         self.s.close()
-        return srvmsg.decode()
+        return srvmsg.decode('latin1')

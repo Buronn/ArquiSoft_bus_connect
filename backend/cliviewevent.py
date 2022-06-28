@@ -3,18 +3,16 @@ from getpass import getpass
 import json
         
 if __name__ == "__main__":
-    print("Service: Login")
+    print("Service: Ver Eventos")
     keep_alive = True
     try:
         while(keep_alive):
-            email = input("Ingrese email: ")
-            password = getpass("Ingrese contraseña: ")
+            token = getpass("Token: ")
             try: 
+                a = Client("bvven")
                 climsg = {
-                    "email": email,
-                    "password": password
+                    "token": token,
                 }
-                a = Client("blogi")
                 msg = a.exec_client(debug=True, climsg=json.dumps(climsg))
                 print("###################################\n\n", msg, "\n\n###################################")
             except Exception as e:
