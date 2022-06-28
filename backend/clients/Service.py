@@ -1,5 +1,5 @@
 from socket import socket, AF_INET, SOCK_STREAM
-import os
+import os, sys
 
 class Service:
     '''Sirve como la base para cualquier servicio que se quiera implementar.
@@ -64,8 +64,13 @@ class Service:
                 # Informamos del error del formato sin terminar el programa.
                 self.s.send(b"00008"+self.name.encode()+b"400")
                 print(e)
-
                 continue
+        
+            except KeyboardInterrupt:
+                # Si se cierra el programa, se cierra el socket.
+                self.s.close()
+                print("Forzando cierre de conexión del servicio")
+                sys.exit(0)
             
             # Validamos que el servicio especificado sea el este
             if srvice.decode() != self.name and srvice.decode() != "sinit":
