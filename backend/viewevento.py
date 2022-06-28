@@ -31,8 +31,8 @@ class VerEvento(Service):
             if eventos:
                 output = "----------------------------------------------------\n"
                 for event in eventos:
-                    output += "Nombre: "+event["nombre"]+"\n"
                     output += "ID: "+str(event["id"])+"\n"
+                    output += "Nombre: "+event["nombre"]+"\n"
                     output += "Descripcion: "+event["descripcion"]+"\n"
                     output += "Fecha inicio: "+event["fecha_inicio"]+"\n"
                     output += "Fecha fin: "+event["fecha_fin"]+"\n"
