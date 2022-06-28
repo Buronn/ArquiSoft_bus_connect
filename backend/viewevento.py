@@ -42,7 +42,6 @@ class VerEvento(Service):
                         output += "Grupo: Personal\n"
                     output += "Creador: "+str(event["usuario_id"])+" ("+db.query(Usuario).filter_by(id=event["usuario_id"]).first().email+")\n"
                     output += "----------------------------------------------------\n"
-                print(output)
                 # replace 0xde 
                 output = output.replace("\xde", "")
                 return (output)
